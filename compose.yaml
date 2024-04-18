@@ -1,0 +1,45 @@
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - mevn-app
+
+  backend:
+    build: ./backend
+    restart: on-failure
+    ports:
+      - 3000:3000
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - mevn-app
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_USER: root
+      MYSQL_PASSWORD: secret
+      MYSQL_DB: items
+
+  mysql:
+    image: mysql:8.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - mevn-app
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: items
+
+networks:
+  mevn-app:
+    driver: bridge
+volumes:
+  mysql-data:
+    driver: local
